@@ -100,7 +100,7 @@ impl Spectrum {
         let k_1 = poly[1];
         let k_2 = poly[2];
         let k_3 = poly[3];
-        let n = poly.len() as f64;
+        let n = (poly.len() - 1) as f64;
     
         if k_1 > 0.0 {
             false

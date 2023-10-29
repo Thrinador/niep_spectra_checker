@@ -1,5 +1,8 @@
 use std::collections::HashMap;
-use log::{error, info};
+use std::time::Instant;
+
+use log::info;
+
 use crate::Spectrum;
 
 pub struct SpectrumMapper {
@@ -52,8 +55,10 @@ impl SpectrumMapper {
     }
 }
 
+// TODO This function is extremely slow, need to find a better method.
 pub fn collapse_spectra(mut spectra: Vec<Spectrum>) -> Vec<Spectrum> {
     info!("Starting spectra before collapsing: {}", spectra.len());
+    let start = Instant::now();
     let mut i = 0;
     while i < spectra.len() {
         let mut j = 0;
@@ -62,14 +67,7 @@ pub fn collapse_spectra(mut spectra: Vec<Spectrum>) -> Vec<Spectrum> {
             if i == j {
                 j += 1;
             } else {
-                let mut bool_is_smaller_spectra = true;
-                for k in 0..spectra[i].len() {
-                    if spectra[i][k] > spectra[j][k] {
-                        bool_is_smaller_spectra = false;
-                        break;
-                    }
-                }
-                if bool_is_smaller_spectra {
+                if spectra[i] < spectra[j] {
                     spectra.remove(j);
                     was_removed = true;
                     break;
@@ -82,6 +80,8 @@ pub fn collapse_spectra(mut spectra: Vec<Spectrum>) -> Vec<Spectrum> {
             i += 1;
         }
     }
+    let duration = start.elapsed();
     info!("Ending spectra after collapsing: {}", spectra.len());
+    info!("Time elapsed collapsing spectra {:?}", duration);
     spectra
 }
