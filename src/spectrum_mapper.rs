@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use log::{error, info};
 use crate::Spectrum;
 
 pub struct SpectrumMapper {
@@ -17,9 +18,7 @@ impl SpectrumMapper {
     }
 
     pub fn map_spectrum_boundary(&mut self, spectrum: &Spectrum) -> Vec<Spectrum> {
-        let vec = self.map_spectrum(spectrum);
-
-        vec
+        collapse_spectra(self.map_spectrum(spectrum))
     }
 
     pub fn map_spectrum(&mut self, spectrum: &Spectrum) -> Vec<Spectrum> {
@@ -53,3 +52,36 @@ impl SpectrumMapper {
     }
 }
 
+pub fn collapse_spectra(mut spectra: Vec<Spectrum>) -> Vec<Spectrum> {
+    info!("Starting spectra before collapsing: {}", spectra.len());
+    let mut i = 0;
+    while i < spectra.len() {
+        let mut j = 0;
+        let mut was_removed = false;
+        while j < spectra.len() {
+            if i == j {
+                j += 1;
+            } else {
+                let mut bool_is_smaller_spectra = true;
+                for k in 0..spectra[i].len() {
+                    if spectra[i][k] > spectra[j][k] {
+                        bool_is_smaller_spectra = false;
+                        break;
+                    }
+                }
+                if bool_is_smaller_spectra {
+                    spectra.remove(j);
+                    was_removed = true;
+                    break;
+                } else {
+                    j += 1;
+                }
+            }
+        }
+        if !was_removed {
+            i += 1;
+        }
+    }
+    info!("Ending spectra after collapsing: {}", spectra.len());
+    spectra
+}
