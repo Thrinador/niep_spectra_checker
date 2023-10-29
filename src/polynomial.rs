@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::ops::{Index, IndexMut, Mul};
+use crate::Spectrum;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Polynomial {
@@ -45,6 +46,14 @@ impl Polynomial {
         Polynomial {
             coefficients: coefficients,
         }
+    }
+
+    pub fn from_spectrum(spectrum: &Spectrum) -> Polynomial {
+        let mut poly = Polynomial::from_vec(vec![1.0]);
+        for i in 0..spectrum.len() {
+            poly = poly * Polynomial::from_vec(vec![1.0, -spectrum[i]]);
+        }
+        poly
     }
 
     pub fn len(&self) -> usize {
