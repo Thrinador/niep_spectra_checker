@@ -5,31 +5,47 @@ use std::ops::{Index, IndexMut};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Spectrum {
     eigenvalues: Vec<f64>,
+    conditions: Vec<bool>,
 }
 
 impl Spectrum {
     pub fn to_string(&self) -> String {
         let mut out: String = String::new();
-        for term in self.eigenvalues.iter() {
-            out = format!("{}, {}", out, term);
+        out = format!("Eigenvalues: {}", self.eigenvalues[0]);
+        for i in 1..self.eigenvalues.len() {
+            if self.eigenvalues[i] >= 0.0 {
+                out = format!("{}, +{:.7}", out, self.eigenvalues[i]);
+            } else {
+                out = format!("{}, -{:.7}", out, self.eigenvalues[i].abs());
+            }
+        }
+        out = format!("{}; Tests: {}", out, self.conditions[0]);
+        for i in 1..self.conditions.len() {
+            out = format!("{}, {}", out, self.conditions[i]);
         }
         out
     }
 
-    pub fn from_element(length: usize, element: f64) -> Spectrum {
+    pub fn from_element(length: usize, element: f64, num_conditions: usize) -> Spectrum {
         Spectrum {
             eigenvalues: vec![element; length],
+            conditions: vec![false; num_conditions],
         }
     }
 
-    pub fn from_vec(eigenvalues: Vec<f64>) -> Spectrum {
+    pub fn from_vec(eigenvalues: Vec<f64>, num_conditions: usize) -> Spectrum {
         Spectrum {
             eigenvalues: eigenvalues,
+            conditions: vec![false; num_conditions],
         }
     }
 
     pub fn len(&self) -> usize {
         self.eigenvalues.len()
+    }
+
+    pub fn change_eigenvalue(&mut self, i: usize, amount: f64) {
+        self[i] += amount;
     }
 }
 

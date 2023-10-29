@@ -1,16 +1,16 @@
 [config]
-# Size of matrices to be testing
+# Size of spectra to be tested
 spectra_size = 2
 
-# Approximate number of matrices to be validating the polynomial at.
-spectra_mutations = 8000
+# Approximate number of spectra mutations to occur
+spectra_mutations = 10
 
-# From the starting polynomial how many mutations should be applied before minimization starts.
+# From the starting spectra how many mutations should be applied before minimization starts.
 mutated_spectra_to_evaluate = 1
 
 # TODO: This would benifit from being an enum or something easier to understand
 # The mode of operation. See documentation.
-mode = 1
+mode = 2
 
-# The starting polynomial to test. This changes based on mode.
-starting_spectra = [1,-1.2]
+# The starting spectra to test. This changes based on mode.
+starting_spectra = [1,0]
