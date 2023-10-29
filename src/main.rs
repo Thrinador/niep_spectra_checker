@@ -32,7 +32,6 @@ enum SpectrumMode {
     TestSpectrum,
     MutateSpectrum,
     MapSpace,
-    ReturnState,
     Error,
 }
 
@@ -41,7 +40,6 @@ fn i32_to_spectra_mode(val: usize) -> SpectrumMode {
         1 => SpectrumMode::TestSpectrum,
         2 => SpectrumMode::MutateSpectrum,
         3 => SpectrumMode::MapSpace,
-        4 => SpectrumMode::ReturnState,
         _ => SpectrumMode::Error,
     }
 }
@@ -57,9 +55,7 @@ fn print_spectra(spectra: Vec<Spectrum>) {
         "Total number of interesting spectra found {}",
         spectra.len()
     );
-    for i in 0..spectra.len() {
-        println!("{}: {}", i, spectra[i].to_string());
-    }
+    
 
     let json_object = serde_json::to_string(&Output {
         interesting_spectra: spectra,
@@ -115,18 +111,13 @@ fn mode_map_space(args: Config) {
     
 }
 
-fn mode_return_state(args: Config) {
-    
-}
-
 fn main() {
     let args = read_user_from_file();
-    //env_logger::init();
+    env_logger::init();
     match i32_to_spectra_mode(args.mode) {
         SpectrumMode::TestSpectrum => mode_test_spectrum(args),
         SpectrumMode::MutateSpectrum => mode_mutate_spectra(args),
         SpectrumMode::MapSpace => mode_map_space(args),
-        SpectrumMode::ReturnState => mode_return_state(args),
         SpectrumMode::Error => error!("mode must be set to 1,2, or 3"),
     }
 }

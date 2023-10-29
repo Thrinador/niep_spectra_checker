@@ -11,8 +11,7 @@ pub struct Spectrum {
 
 impl Spectrum {
     pub fn to_string(&self) -> String {
-        let mut out: String = String::new();
-        out = format!("Eigenvalues: {}", self.eigenvalues[0]);
+        let mut out: String = format!("Eigenvalues: +{:.7}", self.eigenvalues[0]);
         for i in 1..self.eigenvalues.len() {
             if self.eigenvalues[i] >= 0.0 {
                 out = format!("{}, +{:.7}", out, self.eigenvalues[i]);
