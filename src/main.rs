@@ -57,8 +57,8 @@ fn print_spectra(spectra: Vec<Spectrum>) {
         "Total number of interesting spectra found {}",
         spectra.len()
     );
-    for spectrum in &spectra {
-        println!("{}", spectrum.to_string());
+    for i in 0..spectra.len() {
+        println!("{}: {}", i, spectra[i].to_string());
     }
 
     let json_object = serde_json::to_string(&Output {

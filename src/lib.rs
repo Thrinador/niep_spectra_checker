@@ -12,15 +12,12 @@ pub fn mutate_spectrum(
 ) -> Vec<Spectrum> {
     let mut mapped_spectra = HashMap::new();
     let mut hash_code = vec![0;spectrum.len()];
-    println!("Starting spectrum mutations");
     apply_mutations(&mut mapped_spectra, spectrum.clone(), 0, spectra_mutations, 0.1, &mut hash_code);
-    println!("Finished spectrum mutations");
-    let vec: Vec<(Vec<i32>, Spectrum)> = mapped_spectra.into_iter().collect();
-    for element in vec {
-        println!("{}", element.1.to_string());
+    let mut vec: Vec<Spectrum> = Vec::new();
+    for element in mapped_spectra.into_iter() {
+        vec.push(element.1);
     }
-    
-    vec![spectrum]
+    vec
 }
 
 fn apply_mutations(
@@ -31,23 +28,21 @@ fn apply_mutations(
     mutation_amount: f64, 
     hash_code: &mut Vec<i32>,
 ) {
-    for i in hash_code.clone() {
-        print!("{}, ", i);
-    }
-    println!("");
     if steps_taken != total_steps && !mapped_spectra.contains_key(hash_code) {
         if !test_spectra_or(&current_spectrum) {
             mapped_spectra.insert(hash_code.clone(), current_spectrum.clone());
         } else {
             mapped_spectra.insert(hash_code.clone(), current_spectrum.clone());
             for i in 1..current_spectrum.len() {
-                let mut spec = current_spectrum.clone();
-                spec.change_eigenvalue(i, mutation_amount);
+                let mut spec_pos = current_spectrum.clone();
+                let mut spec_neg = current_spectrum.clone();
                 hash_code[i] += 1;
-                apply_mutations(mapped_spectra, spec.clone(), steps_taken+1, total_steps, mutation_amount, hash_code);
-                spec.change_eigenvalue(i, -2.0*mutation_amount);
+                if spec_pos.change_eigenvalue(i, mutation_amount) {
+                    apply_mutations(mapped_spectra, spec_pos, steps_taken+1, total_steps, mutation_amount, hash_code);
+                }
                 hash_code[i] -= 2;
-                apply_mutations(mapped_spectra, spec, steps_taken+1, total_steps, mutation_amount, hash_code);
+                spec_neg.change_eigenvalue(i, -1.0*mutation_amount);
+                apply_mutations(mapped_spectra, spec_neg, steps_taken+1, total_steps, mutation_amount, hash_code);
             }
         }
     }

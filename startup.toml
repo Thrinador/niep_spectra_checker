@@ -3,7 +3,7 @@
 spectra_size = 2
 
 # Approximate number of spectra mutations to occur
-spectra_mutations = 10
+spectra_mutations = 1000
 
 # From the starting spectra how many mutations should be applied before minimization starts.
 mutated_spectra_to_evaluate = 1

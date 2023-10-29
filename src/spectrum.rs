@@ -44,8 +44,13 @@ impl Spectrum {
         self.eigenvalues.len()
     }
 
-    pub fn change_eigenvalue(&mut self, i: usize, amount: f64) {
-        self[i] += amount;
+    pub fn change_eigenvalue(&mut self, i: usize, amount: f64) -> bool {
+        if self[i] + amount <= 1.0 {
+            self[i] += amount;
+            true
+        } else {
+            false
+        }
     }
 }
 
