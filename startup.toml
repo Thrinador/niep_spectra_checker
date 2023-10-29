@@ -13,4 +13,4 @@ mutated_spectra_to_evaluate = 1
 mode = 2
 
 # The starting spectra to test. This changes based on mode.
-starting_spectra = [1,0]
+starting_spectra = [1,0,0,0]

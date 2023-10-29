@@ -71,13 +71,13 @@ fn print_spectra(spectra: Vec<Spectrum>) {
 
 fn mode_test_spectrum(args: Config) {
     let start = Instant::now();
-    let spectrum = if args.starting_spectra.len() == 0 {
+    let mut spectrum = if args.starting_spectra.len() == 0 {
         Spectrum::from_vec(vec![1.0, 1.0, 1.0, 1.0, 1.0], 3)
     } else {
         Spectrum::from_vec(args.starting_spectra, 3)
     };
     
-    let verify_spectrum = test_spectra(&spectrum);
+    let verify_spectrum = spectrum.test_spectra_or();
     let duration = start.elapsed();
     info!("Total time elapsed verifying spectrum {:?}", duration);
     if verify_spectrum {

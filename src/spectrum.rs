@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::ops::{Index, IndexMut};
+use crate::Polynomial;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Spectrum {
@@ -50,6 +51,66 @@ impl Spectrum {
             true
         } else {
             false
+        }
+    }
+
+    pub fn test_spectra_or(&mut self) -> bool {
+        self.conditions[0] = self.test_moment_condition(10);
+        self.conditions[1] = self.test_jll_condition(10);
+        self.conditions[2] = self.test_taamp_condition();
+
+        self.conditions[0] || self.conditions[1] || self.conditions[2]
+    }
+    
+    pub fn test_moment_condition(&self, powers: usize) -> bool {
+        for k in 1..powers {
+            if self.moment(k) <= -0.00001 {
+                return false;
+            }
+        }
+        true
+    }
+    
+    pub fn test_jll_condition(&self, powers: usize) -> bool {
+        let n = self.len() as f64;
+        for m in 1..powers {
+            for k in 1..powers {
+                if self.moment(k).powi(m as i32) > 
+                    n.powf((m-1) as f64) * self.moment(k*m) {
+                    return false;
+                } 
+            }
+        }
+        true
+    }
+    
+    fn moment(&self, k: usize) -> f64 {
+        let mut sum = 0.0;
+        for i in 0..self.len() {
+            sum += self[i].powi(k as i32);
+        }
+        sum
+    } 
+    
+    pub fn test_taamp_condition(&self) -> bool {
+        // The TAAMP condition only applies for 4x4 and above.
+        if self.len() < 4 {
+            return false;
+        }
+        let poly = Polynomial::from_spectrum(self);
+        let k_1 = poly[1];
+        let k_2 = poly[2];
+        let k_3 = poly[3];
+        let n = poly.len() as f64;
+    
+        if k_1 > 0.0 {
+            false
+        } else if k_2 > ((n - 1.0) / (2.0*n)) * k_1.powi(2) {
+            false
+        } else if (((n-1.0)*(n-4.0)) / (2.0*(n-2.0).powi(2))) * k_1.powi(2) < k_2 {
+            k_3 <= ((n-2.0) / n) * (k_1 * k_2 + ((n-1.0) / (3.0*n)) * ((k_1.powi(2) - ((2.0*n*k_2)/ (n-1.0)).powf(1.5) - k_1.powi(3))))
+        } else {
+            k_3 <= k_1 * k_2 - (((n-1.0) * (n-3.0)) / (3.0*(n-2.0).powi(2))) * k_1.powi(3)
         }
     }
 }

@@ -153,11 +153,9 @@ impl Mul<Polynomial> for Polynomial {
         let mut poly = Polynomial::from_element(self.len() + other.len() - 1, 0.0);
         for i in 0..self.len() {
             for j in 0..other.len() {
-                println!("{} + {}, i={}, j={}", poly[i+j], self[i]*other[j],i,j);
                 poly [i+j] = poly[i+j] + self[i]*other[j];
             }
         }
-        println!("{}", poly.to_string());
         poly
     }
 }
