@@ -67,7 +67,7 @@ pub fn collapse_spectra(mut spectra: Vec<Spectrum>) -> Vec<Spectrum> {
             if i == j {
                 j += 1;
             } else {
-                if spectra[i] < spectra[j] {
+                if spectra[i].equal_conditions(&spectra[j]) && spectra[i] < spectra[j] {
                     spectra.remove(j);
                     was_removed = true;
                     break;

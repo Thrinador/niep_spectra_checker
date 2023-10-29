@@ -53,6 +53,15 @@ impl Spectrum {
         }
     }
 
+    pub fn equal_conditions(&self, other: &Spectrum) -> bool {
+        for i in 0..self.conditions.len() {
+            if self.conditions[i] != other.conditions[i] {
+                return false;
+            }
+        }
+        true
+    }
+
     pub fn test_spectra_or(&mut self) -> bool {
         self.conditions[0] = self.test_moment_condition(10);
         self.conditions[1] = self.test_jll_condition(10);
@@ -107,7 +116,7 @@ impl Spectrum {
         } else if k_2 > ((n - 1.0) / (2.0*n)) * k_1.powi(2) {
             false
         } else if (((n-1.0)*(n-4.0)) / (2.0*(n-2.0).powi(2))) * k_1.powi(2) < k_2 {
-            k_3 <= ((n-2.0) / n) * (k_1 * k_2 + ((n-1.0) / (3.0*n)) * ((k_1.powi(2) - ((2.0*n*k_2)/ (n-1.0)).powf(1.5) - k_1.powi(3))))
+            k_3 <= ((n-2.0) / n) * (k_1 * k_2 + ((n-1.0) / (3.0*n)) * ((k_1.powi(2) - ((2.0*n*k_2)/ (n-1.0))).powf(1.5) - k_1.powi(3)))
         } else {
             k_3 <= k_1 * k_2 - (((n-1.0) * (n-3.0)) / (3.0*(n-2.0).powi(2))) * k_1.powi(3)
         }
