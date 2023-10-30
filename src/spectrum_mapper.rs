@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::time::Instant;
 
@@ -29,8 +30,11 @@ impl SpectrumMapper {
         let mut vec: Vec<Spectrum> = Vec::new();
         // TODO this loop needs to be fixed. This clone call will be very expensive. 
         for element in self.mapped_spectra.clone().into_iter() {
-            vec.push(element.1);
+            let mut ele = element.1;
+            ele.sort_eigenvalues();
+            vec.push(ele);
         }
+
         vec
     }
 
@@ -59,7 +63,34 @@ impl SpectrumMapper {
 pub fn collapse_spectra(mut spectra: Vec<Spectrum>) -> Vec<Spectrum> {
     info!("Starting spectra before collapsing: {}", spectra.len());
     let start = Instant::now();
+
+    // Pre-sort the spectra in decreasing order.
+    spectra.sort_by(|b,a| {
+        if b == a {
+            Ordering::Equal
+        } else if b < a {
+            Ordering::Less
+        } else {
+            Ordering::Greater
+        }
+    });
+
+    // Most duplicates will occur next to one another. This first pass should save time on the n^2 part below.
     let mut i = 0;
+    while i+1 < spectra.len() {
+        if spectra[i].equal_conditions(&spectra[i+1]) && spectra[i] > spectra[i+1] {
+            spectra.remove(i);
+            if i > 0 {
+                i -= 1;
+            }
+        } else if spectra[i].equal_conditions(&spectra[i+1]) && spectra[i] < spectra[i+1] {
+            spectra.remove(i+1);
+        } else {
+            i += 1;
+        }
+    }
+
+    i = 0;
     while i < spectra.len() {
         let mut j = 0;
         let mut was_removed = false;

@@ -11,17 +11,21 @@ pub struct Spectrum {
 
 impl Spectrum {
     pub fn to_string(&self) -> String {
-        let mut out: String = format!("Eigenvalues: +{:.7}", self.eigenvalues[0]);
+        let mut out: String = format!("Eigenvalues: +{}", self.eigenvalues[0]);
         for i in 1..self.eigenvalues.len() {
             if self.eigenvalues[i] >= 0.0 {
-                out = format!("{}, +{:.7}", out, self.eigenvalues[i]);
+                out = format!("{}, +{:.2}", out, self.eigenvalues[i]);
             } else {
-                out = format!("{}, -{:.7}", out, self.eigenvalues[i].abs());
+                out = format!("{}, -{:.2}", out, self.eigenvalues[i].abs());
             }
         }
         out = format!("{}; Tests: {}", out, self.conditions[0]);
         for i in 1..self.conditions.len() {
-            out = format!("{}, {}", out, self.conditions[i]);
+            if self.conditions[i] {
+                out = format!("{}, true ", out);
+            } else {
+                out = format!("{}, false", out);
+            }
         }
         out
     }
@@ -47,6 +51,7 @@ impl Spectrum {
     pub fn change_eigenvalue(&mut self, i: usize, amount: f64) -> bool {
         if self[i] + amount <= 1.0 {
             self[i] += amount;
+            self[i] = (self[i] * 1000.0).round() / 1000.0;
             true
         } else {
             false
@@ -60,6 +65,18 @@ impl Spectrum {
             }
         }
         true
+    }
+
+    pub fn sort_eigenvalues(&mut self) {
+        self.eigenvalues.sort_by(|a, b| {
+            if b == a {
+                Ordering::Equal
+            } else if b < a {
+                Ordering::Less
+            } else {
+                Ordering::Greater
+            }
+        });
     }
 
     pub fn test_spectra_or(&mut self) -> bool {
@@ -106,21 +123,25 @@ impl Spectrum {
             return false;
         }
         let poly = Polynomial::from_spectrum(self);
-        let k_1 = poly[1];
-        let k_2 = poly[2];
-        let k_3 = poly[3];
+        let k_1 = round(poly[1]);
+        let k_2 = round(poly[2]);
+        let k_3 = round(poly[3]);
         let n = (poly.len() - 1) as f64;
     
         if k_1 > 0.0 {
             false
-        } else if k_2 > ((n - 1.0) / (2.0*n)) * k_1.powi(2) {
+        } else if k_2 > round(((n - 1.0) / (2.0*n)) * k_1.powi(2)) {
             false
-        } else if (((n-1.0)*(n-4.0)) / (2.0*(n-2.0).powi(2))) * k_1.powi(2) < k_2 {
-            k_3 <= ((n-2.0) / n) * (k_1 * k_2 + ((n-1.0) / (3.0*n)) * ((k_1.powi(2) - ((2.0*n*k_2)/ (n-1.0))).powf(1.5) - k_1.powi(3)))
+        } else if round((((n-1.0)*(n-4.0)) / (2.0*(n-2.0).powi(2))) * k_1.powi(2)) < k_2 {
+            k_3 <= round(((n-2.0) / n) * (k_1 * k_2 + ((n-1.0) / (3.0*n)) * ((k_1.powi(2) - ((2.0*n*k_2)/ (n-1.0))).powf(1.5) - k_1.powi(3))))
         } else {
-            k_3 <= k_1 * k_2 - (((n-1.0) * (n-3.0)) / (3.0*(n-2.0).powi(2))) * k_1.powi(3)
+            k_3 <= round(k_1 * k_2 - (((n-1.0) * (n-3.0)) / (3.0*(n-2.0).powi(2))) * k_1.powi(3))
         }
     }
+}
+
+pub fn round(num : f64) -> f64 {
+    (num * 1000.0).round() / 1000.0
 }
 
 pub fn approx_equal(term1: f64, term2: f64) -> bool {
